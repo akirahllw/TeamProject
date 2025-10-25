@@ -21,7 +21,11 @@ Additionally, we aim to **gain experience in working as a team**, **designing ef
 - API & Routing  
 
 **Artem Ratushnyi, Marup Khashimov** — Frontend Developers  
-- UI Implementation  
+- User Interface Design
+- React Components
+- Responsive Design
 
-**Oleksandr Knyshuk**
-- CI/CD
+**Oleksandr Knyshuk** - CI/CD Engineer
+- Docker Deployment
+- GitHub Actions
+- Infrastructure Management
