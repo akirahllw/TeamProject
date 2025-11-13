@@ -1,8 +1,6 @@
-from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from pydantic import BaseModel, EmailStr
-from typing import Optional
-from datetime import datetime, timedelta
 
 router = APIRouter()
 
@@ -17,8 +15,8 @@ class Token(BaseModel):
 
 
 class TokenData(BaseModel):
-    user_id: Optional[int] = None
-    username: Optional[str] = None
+    user_id: int | None = None
+    username: str | None = None
 
 
 class UserLogin(BaseModel):

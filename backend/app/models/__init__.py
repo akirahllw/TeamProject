@@ -2,9 +2,10 @@
 # and conveniently exports all the models.
 
 from app.db.base import Base
-from .user import User
+
+from .issue import Comment, Issue, IssuePriority, IssueStatus, IssueType
 from .project import Project, ProjectMember, ProjectRole
-from .issue import Issue, Comment, IssueType, IssueStatus, IssuePriority
+from .user import User
 
 # You can add all models to __all__ for cleaner wildcard imports
 __all__ = [

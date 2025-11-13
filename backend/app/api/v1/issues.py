@@ -1,8 +1,8 @@
-from fastapi import APIRouter, HTTPException, Query
-from typing import List, Optional
-from pydantic import BaseModel
 from datetime import datetime
 from enum import Enum
+
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
 
 
 class IssueType(str, Enum):
@@ -27,16 +27,16 @@ router = APIRouter()
 # Pydantic schemas (placeholder - will be replaced with actual models later)
 class IssueBase(BaseModel):
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     issue_type: IssueType
     priority: IssuePriority
     project_id: int
-    assignee_id: Optional[int] = None
+    assignee_id: int | None = None
     reporter_id: int
-    status_id: Optional[int] = None
-    sprint_id: Optional[int] = None
-    story_points: Optional[int] = None
-    due_date: Optional[datetime] = None
+    status_id: int | None = None
+    sprint_id: int | None = None
+    story_points: int | None = None
+    due_date: datetime | None = None
 
 
 class IssueCreate(IssueBase):
@@ -44,15 +44,15 @@ class IssueCreate(IssueBase):
 
 
 class IssueUpdate(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    issue_type: Optional[IssueType] = None
-    priority: Optional[IssuePriority] = None
-    assignee_id: Optional[int] = None
-    status_id: Optional[int] = None
-    sprint_id: Optional[int] = None
-    story_points: Optional[int] = None
-    due_date: Optional[datetime] = None
+    title: str | None = None
+    description: str | None = None
+    issue_type: IssueType | None = None
+    priority: IssuePriority | None = None
+    assignee_id: int | None = None
+    status_id: int | None = None
+    sprint_id: int | None = None
+    story_points: int | None = None
+    due_date: datetime | None = None
 
 
 class IssueResponse(IssueBase):
@@ -65,18 +65,18 @@ class IssueResponse(IssueBase):
         from_attributes = True
 
 
-@router.get("/", response_model=List[IssueResponse])
+@router.get("/", response_model=list[IssueResponse])
 async def get_issues(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
-    project_id: Optional[int] = None,
-    assignee_id: Optional[int] = None,
-    reporter_id: Optional[int] = None,
-    status_id: Optional[int] = None,
-    sprint_id: Optional[int] = None,
-    issue_type: Optional[IssueType] = None,
-    priority: Optional[IssuePriority] = None,
-    search: Optional[str] = None,
+    project_id: int | None = None,
+    assignee_id: int | None = None,
+    reporter_id: int | None = None,
+    status_id: int | None = None,
+    sprint_id: int | None = None,
+    issue_type: IssueType | None = None,
+    priority: IssuePriority | None = None,
+    search: str | None = None,
 ):
     """
     Get all issues with filtering and pagination
@@ -157,7 +157,7 @@ async def delete_issue(issue_id: int):
     raise HTTPException(status_code=404, detail="Issue not found")
 
 
-@router.get("/{issue_id}/comments", response_model=List[dict])
+@router.get("/{issue_id}/comments", response_model=list[dict])
 async def get_issue_comments(issue_id: int):
     """
     Get all comments for an issue
@@ -166,7 +166,7 @@ async def get_issue_comments(issue_id: int):
     return []
 
 
-@router.get("/{issue_id}/attachments", response_model=List[dict])
+@router.get("/{issue_id}/attachments", response_model=list[dict])
 async def get_issue_attachments(issue_id: int):
     """
     Get all attachments for an issue
@@ -175,7 +175,7 @@ async def get_issue_attachments(issue_id: int):
     return []
 
 
-@router.get("/{issue_id}/history", response_model=List[dict])
+@router.get("/{issue_id}/history", response_model=list[dict])
 async def get_issue_history(issue_id: int):
     """
     Get change history for an issue

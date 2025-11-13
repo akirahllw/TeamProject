@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException, UploadFile, File, Query
-from typing import List, Optional
-from pydantic import BaseModel
 from datetime import datetime
+
+from fastapi import APIRouter, File, HTTPException, Query, UploadFile
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -24,9 +24,9 @@ class AttachmentResponse(AttachmentBase):
         from_attributes = True
 
 
-@router.get("/", response_model=List[AttachmentResponse])
+@router.get("/", response_model=list[AttachmentResponse])
 async def get_attachments(
-    issue_id: Optional[int] = None,
+    issue_id: int | None = None,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
 ):

@@ -1,14 +1,15 @@
 import enum
-from typing import List, Optional, TYPE_CHECKING
-from sqlalchemy import String, ForeignKey, Text, Enum
+from typing import TYPE_CHECKING
+
+from sqlalchemy import Enum, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base  # Import Base from new location
 
 # This block is only processed by type-checkers, not at runtime
 if TYPE_CHECKING:
-    from .user import User
     from .issue import Issue
+    from .user import User
 
 
 # Enum for Project-level roles
@@ -42,7 +43,7 @@ class Project(Base):
     key: Mapped[str] = mapped_column(
         String(10), unique=True, index=True, nullable=False
     )
-    description: Mapped[Optional[str]] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text)
 
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
@@ -50,11 +51,11 @@ class Project(Base):
 
     owner: Mapped["User"] = relationship("User", back_populates="owned_projects")
 
-    issues: Mapped[List["Issue"]] = relationship(
+    issues: Mapped[list["Issue"]] = relationship(
         "Issue", back_populates="project", cascade="all, delete-orphan"
     )
 
-    member_associations: Mapped[List["ProjectMember"]] = relationship(
+    member_associations: Mapped[list["ProjectMember"]] = relationship(
         "ProjectMember", back_populates="project", cascade="all, delete-orphan"
     )
 

@@ -1,12 +1,13 @@
 import enum
 from datetime import datetime
-from typing import List, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
+
 from sqlalchemy import (
-    String,
-    ForeignKey,
     DateTime,
-    Text,
     Enum,
+    ForeignKey,
+    String,
+    Text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
@@ -15,8 +16,8 @@ from app.db.base import Base  # Import Base from new location
 
 # This block is only processed by type-checkers, not at runtime
 if TYPE_CHECKING:
-    from .user import User
     from .project import Project
+    from .user import User
 
 
 # --- Enums for Issue fields ---
@@ -46,7 +47,7 @@ class Issue(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
-    description: Mapped[Optional[str]] = mapped_column(Text)
+    description: Mapped[str | None] = mapped_column(Text)
 
     status: Mapped[IssueStatus] = mapped_column(
         Enum(IssueStatus), default=IssueStatus.TO_DO, nullable=False
@@ -68,8 +69,8 @@ class Issue(Base):
     # --- Foreign Keys ---
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), nullable=False)
     reporter_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    assignee_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"))
-    parent_issue_id: Mapped[Optional[int]] = mapped_column(ForeignKey("issues.id"))
+    assignee_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
+    parent_issue_id: Mapped[int | None] = mapped_column(ForeignKey("issues.id"))
 
     # --- Relationships ---
 
@@ -83,14 +84,14 @@ class Issue(Base):
         "User", back_populates="assigned_issues", foreign_keys=[assignee_id]
     )
 
-    comments: Mapped[List["Comment"]] = relationship(
+    comments: Mapped[list["Comment"]] = relationship(
         "Comment", back_populates="issue", cascade="all, delete-orphan"
     )
 
     parent: Mapped[Optional["Issue"]] = relationship(
         "Issue", back_populates="sub_tasks", remote_side=[id]
     )
-    sub_tasks: Mapped[List["Issue"]] = relationship(
+    sub_tasks: Mapped[list["Issue"]] = relationship(
         "Issue", back_populates="parent", cascade="all, delete-orphan"
     )
 

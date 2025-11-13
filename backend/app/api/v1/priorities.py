@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException, Query
-from typing import List, Optional
-from pydantic import BaseModel
 from datetime import datetime
+
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -9,8 +9,8 @@ router = APIRouter()
 # Pydantic schemas (placeholder - will be replaced with actual models later)
 class PriorityBase(BaseModel):
     name: str
-    description: Optional[str] = None
-    color: Optional[str] = None  # Hex color code
+    description: str | None = None
+    color: str | None = None  # Hex color code
     level: int  # Numeric level for sorting (1-5)
 
 
@@ -19,10 +19,10 @@ class PriorityCreate(PriorityBase):
 
 
 class PriorityUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    color: Optional[str] = None
-    level: Optional[int] = None
+    name: str | None = None
+    description: str | None = None
+    color: str | None = None
+    level: int | None = None
 
 
 class PriorityResponse(PriorityBase):
@@ -35,7 +35,7 @@ class PriorityResponse(PriorityBase):
         from_attributes = True
 
 
-@router.get("/", response_model=List[PriorityResponse])
+@router.get("/", response_model=list[PriorityResponse])
 async def get_priorities(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
@@ -83,7 +83,7 @@ async def delete_priority(priority_id: int):
     raise HTTPException(status_code=404, detail="Priority not found")
 
 
-@router.get("/{priority_id}/issues", response_model=List[dict])
+@router.get("/{priority_id}/issues", response_model=list[dict])
 async def get_priority_issues(
     priority_id: int,
     skip: int = Query(0, ge=0),

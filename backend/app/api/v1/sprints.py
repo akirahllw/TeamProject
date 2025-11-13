@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException, Query
-from typing import List, Optional
-from pydantic import BaseModel
 from datetime import datetime
+
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -12,7 +12,7 @@ class SprintBase(BaseModel):
     project_id: int
     start_date: datetime
     end_date: datetime
-    goal: Optional[str] = None
+    goal: str | None = None
 
 
 class SprintCreate(SprintBase):
@@ -20,10 +20,10 @@ class SprintCreate(SprintBase):
 
 
 class SprintUpdate(BaseModel):
-    name: Optional[str] = None
-    start_date: Optional[datetime] = None
-    end_date: Optional[datetime] = None
-    goal: Optional[str] = None
+    name: str | None = None
+    start_date: datetime | None = None
+    end_date: datetime | None = None
+    goal: str | None = None
 
 
 class SprintResponse(SprintBase):
@@ -36,10 +36,10 @@ class SprintResponse(SprintBase):
         from_attributes = True
 
 
-@router.get("/", response_model=List[SprintResponse])
+@router.get("/", response_model=list[SprintResponse])
 async def get_sprints(
-    project_id: Optional[int] = None,
-    status: Optional[str] = None,
+    project_id: int | None = None,
+    status: str | None = None,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
 ):
@@ -104,7 +104,7 @@ async def close_sprint(sprint_id: int):
     raise HTTPException(status_code=404, detail="Sprint not found")
 
 
-@router.get("/{sprint_id}/issues", response_model=List[dict])
+@router.get("/{sprint_id}/issues", response_model=list[dict])
 async def get_sprint_issues(
     sprint_id: int,
     skip: int = Query(0, ge=0),

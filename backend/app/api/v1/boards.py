@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException, Query
-from typing import List, Optional
-from pydantic import BaseModel
 from datetime import datetime
+
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -11,7 +11,7 @@ class BoardBase(BaseModel):
     name: str
     project_id: int
     board_type: str  # e.g., "scrum", "kanban"
-    description: Optional[str] = None
+    description: str | None = None
 
 
 class BoardCreate(BoardBase):
@@ -19,9 +19,9 @@ class BoardCreate(BoardBase):
 
 
 class BoardUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    board_type: Optional[str] = None
+    name: str | None = None
+    description: str | None = None
+    board_type: str | None = None
 
 
 class BoardResponse(BoardBase):
@@ -33,9 +33,9 @@ class BoardResponse(BoardBase):
         from_attributes = True
 
 
-@router.get("/", response_model=List[BoardResponse])
+@router.get("/", response_model=list[BoardResponse])
 async def get_boards(
-    project_id: Optional[int] = None,
+    project_id: int | None = None,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
 ):
@@ -82,7 +82,7 @@ async def delete_board(board_id: int):
     raise HTTPException(status_code=404, detail="Board not found")
 
 
-@router.get("/{board_id}/columns", response_model=List[dict])
+@router.get("/{board_id}/columns", response_model=list[dict])
 async def get_board_columns(board_id: int):
     """
     Get all columns for a board (e.g., To Do, In Progress, Done)
@@ -100,10 +100,10 @@ async def create_board_column(board_id: int, column_data: dict):
     raise HTTPException(status_code=404, detail="Board not found")
 
 
-@router.get("/{board_id}/issues", response_model=List[dict])
+@router.get("/{board_id}/issues", response_model=list[dict])
 async def get_board_issues(
     board_id: int,
-    column_id: Optional[int] = None,
+    column_id: int | None = None,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
 ):

@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException, Query
-from typing import List, Optional
-from pydantic import BaseModel
 from datetime import datetime
+
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -9,8 +9,8 @@ router = APIRouter()
 # Pydantic schemas (placeholder - will be replaced with actual models later)
 class StatusBase(BaseModel):
     name: str
-    description: Optional[str] = None
-    color: Optional[str] = None  # Hex color code
+    description: str | None = None
+    color: str | None = None  # Hex color code
     category: str  # e.g., "todo", "in_progress", "done"
 
 
@@ -19,10 +19,10 @@ class StatusCreate(StatusBase):
 
 
 class StatusUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    color: Optional[str] = None
-    category: Optional[str] = None
+    name: str | None = None
+    description: str | None = None
+    color: str | None = None
+    category: str | None = None
 
 
 class StatusResponse(StatusBase):
@@ -35,9 +35,9 @@ class StatusResponse(StatusBase):
         from_attributes = True
 
 
-@router.get("/", response_model=List[StatusResponse])
+@router.get("/", response_model=list[StatusResponse])
 async def get_statuses(
-    category: Optional[str] = None,
+    category: str | None = None,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
 ):
@@ -84,7 +84,7 @@ async def delete_status(status_id: int):
     raise HTTPException(status_code=404, detail="Status not found")
 
 
-@router.get("/{status_id}/issues", response_model=List[dict])
+@router.get("/{status_id}/issues", response_model=list[dict])
 async def get_status_issues(
     status_id: int,
     skip: int = Query(0, ge=0),

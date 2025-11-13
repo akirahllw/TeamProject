@@ -1,5 +1,4 @@
-from fastapi import APIRouter, HTTPException, Query
-from typing import List, Optional
+from fastapi import APIRouter, Query
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -10,13 +9,13 @@ class SearchResult(BaseModel):
     type: str  # "issue", "project", "user", etc.
     id: int
     title: str
-    description: Optional[str] = None
+    description: str | None = None
     url: str
 
 
 class SearchResponse(BaseModel):
     query: str
-    results: List[SearchResult]
+    results: list[SearchResult]
     total: int
     page: int
     page_size: int
@@ -25,10 +24,8 @@ class SearchResponse(BaseModel):
 @router.get("/", response_model=SearchResponse)
 async def search(
     q: str = Query(..., min_length=1, description="Search query"),
-    type: Optional[str] = Query(
-        None, description="Filter by type: issue, project, user"
-    ),
-    project_id: Optional[int] = Query(None, description="Filter by project"),
+    type: str | None = Query(None, description="Filter by type: issue, project, user"),
+    project_id: int | None = Query(None, description="Filter by project"),
     skip: int = Query(0, ge=0, description="Pagination offset"),
     limit: int = Query(20, ge=1, le=100, description="Results per page"),
 ):
@@ -46,12 +43,12 @@ async def search(
     )
 
 
-@router.get("/issues", response_model=List[dict])
+@router.get("/issues", response_model=list[dict])
 async def search_issues(
     q: str = Query(..., min_length=1),
-    project_id: Optional[int] = None,
-    assignee_id: Optional[int] = None,
-    status_id: Optional[int] = None,
+    project_id: int | None = None,
+    assignee_id: int | None = None,
+    status_id: int | None = None,
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
 ):
@@ -62,7 +59,7 @@ async def search_issues(
     return []
 
 
-@router.get("/projects", response_model=List[dict])
+@router.get("/projects", response_model=list[dict])
 async def search_projects(
     q: str = Query(..., min_length=1),
     skip: int = Query(0, ge=0),
@@ -75,7 +72,7 @@ async def search_projects(
     return []
 
 
-@router.get("/users", response_model=List[dict])
+@router.get("/users", response_model=list[dict])
 async def search_users(
     q: str = Query(..., min_length=1),
     skip: int = Query(0, ge=0),

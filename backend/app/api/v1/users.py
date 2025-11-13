@@ -1,8 +1,7 @@
-from fastapi import APIRouter, HTTPException, Query
-from typing import List, Optional
-from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel, EmailStr
 
 router = APIRouter()
 
@@ -21,11 +20,11 @@ class UserCreate(UserBase):
 
 
 class UserUpdate(BaseModel):
-    email: Optional[EmailStr] = None
-    username: Optional[str] = None
-    full_name: Optional[str] = None
-    is_active: Optional[bool] = None
-    is_admin: Optional[bool] = None
+    email: EmailStr | None = None
+    username: str | None = None
+    full_name: str | None = None
+    is_active: bool | None = None
+    is_admin: bool | None = None
 
 
 class UserResponse(UserBase):
@@ -37,12 +36,12 @@ class UserResponse(UserBase):
         from_attributes = True
 
 
-@router.get("/", response_model=List[UserResponse])
+@router.get("/", response_model=list[UserResponse])
 async def get_users(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
-    search: Optional[str] = None,
-    is_active: Optional[bool] = None,
+    search: str | None = None,
+    is_active: bool | None = None,
 ):
     """
     Get all users with pagination and optional filtering
@@ -96,7 +95,7 @@ async def delete_user(user_id: int):
     raise HTTPException(status_code=404, detail="User not found")
 
 
-@router.get("/{user_id}/issues", response_model=List[dict])
+@router.get("/{user_id}/issues", response_model=list[dict])
 async def get_user_issues(
     user_id: int,
     assigned: bool = Query(True),
@@ -110,7 +109,7 @@ async def get_user_issues(
     return []
 
 
-@router.get("/{user_id}/projects", response_model=List[dict])
+@router.get("/{user_id}/projects", response_model=list[dict])
 async def get_user_projects(user_id: int):
     """
     Get projects where user is a member or lead

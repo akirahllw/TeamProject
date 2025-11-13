@@ -1,17 +1,18 @@
 from fastapi import APIRouter
+
 from . import (
-    projects,
-    issues,
-    users,
-    auth,
-    comments,
     attachments,
+    auth,
     boards,
-    sprints,
-    workflows,
-    statuses,
+    comments,
+    issues,
     priorities,
+    projects,
     search,
+    sprints,
+    statuses,
+    users,
+    workflows,
 )
 
 api_router = APIRouter()

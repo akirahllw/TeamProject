@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException, Query
-from typing import List, Optional
-from pydantic import BaseModel
 from datetime import datetime
+
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -10,8 +10,8 @@ router = APIRouter()
 class ProjectBase(BaseModel):
     name: str
     key: str
-    description: Optional[str] = None
-    lead_id: Optional[int] = None
+    description: str | None = None
+    lead_id: int | None = None
 
 
 class ProjectCreate(ProjectBase):
@@ -19,9 +19,9 @@ class ProjectCreate(ProjectBase):
 
 
 class ProjectUpdate(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    lead_id: Optional[int] = None
+    name: str | None = None
+    description: str | None = None
+    lead_id: int | None = None
 
 
 class ProjectResponse(ProjectBase):
@@ -33,11 +33,11 @@ class ProjectResponse(ProjectBase):
         from_attributes = True
 
 
-@router.get("/", response_model=List[ProjectResponse])
+@router.get("/", response_model=list[ProjectResponse])
 async def get_projects(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
-    search: Optional[str] = None,
+    search: str | None = None,
 ):
     """
     Get all projects with pagination and optional search
@@ -82,7 +82,7 @@ async def delete_project(project_id: int):
     raise HTTPException(status_code=404, detail="Project not found")
 
 
-@router.get("/{project_id}/issues", response_model=List[dict])
+@router.get("/{project_id}/issues", response_model=list[dict])
 async def get_project_issues(
     project_id: int,
     skip: int = Query(0, ge=0),

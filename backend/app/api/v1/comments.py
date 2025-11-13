@@ -1,7 +1,7 @@
-from fastapi import APIRouter, HTTPException, Query
-from typing import List, Optional
-from pydantic import BaseModel
 from datetime import datetime
+
+from fastapi import APIRouter, HTTPException, Query
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -30,10 +30,10 @@ class CommentResponse(CommentBase):
         from_attributes = True
 
 
-@router.get("/", response_model=List[CommentResponse])
+@router.get("/", response_model=list[CommentResponse])
 async def get_comments(
-    issue_id: Optional[int] = None,
-    author_id: Optional[int] = None,
+    issue_id: int | None = None,
+    author_id: int | None = None,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
 ):

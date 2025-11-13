@@ -3,6 +3,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.v1 import api_router
 from app.core.config import settings
 from app.core.logging import setup_logging
 
@@ -37,9 +38,6 @@ async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "version": settings.APP_VERSION}
 
-
-# Include routers
-from app.api.v1 import api_router
 
 app.include_router(api_router, prefix="/api/v1")
 
