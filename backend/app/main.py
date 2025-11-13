@@ -36,9 +36,10 @@ async def health_check():
     return {"status": "healthy", "version": settings.APP_VERSION}
 
 
-# Include routers will be added here as they are developed
-# from app.api.v1.api import api_router
-# app.include_router(api_router, prefix="/api/v1")
+# Include routers
+from app.api.v1 import api_router
+
+app.include_router(api_router, prefix="/api/v1")
 
 if __name__ == "__main__":
     import uvicorn
