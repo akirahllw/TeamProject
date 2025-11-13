@@ -39,13 +39,13 @@ test-coverage: ## Run tests with coverage
 
 lint: ## Run linters for both backend and frontend
 	@echo "Linting backend..."
-	cd backend && uv run black --check . && uv run flake8 . && uv run mypy app
+	cd backend && uv run ruff check . && uv run ruff format --check . && uv run mypy app
 	@echo "Linting frontend..."
 	cd frontend && bun run lint && bun run format:check
 
 lint-fix: ## Fix linting issues
-	@echo "Fixing backend formatting..."
-	cd backend && uv run black .
+	@echo "Fixing backend..."
+	cd backend && uv run ruff check --fix . && uv run ruff format .
 	@echo "Fixing frontend linting..."
 	cd frontend && bun run lint:fix && bun run format
 

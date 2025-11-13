@@ -78,8 +78,8 @@ jobs:
       - name: Run code quality checks
         working-directory: ./backend
         run: |
-          uv run black --check . || true
-          uv run flake8 . || true
+          uv run ruff check . || true
+          uv run ruff format --check . || true
           uv run pytest --cov=app --cov-report=term || true
 
   frontend-quality:

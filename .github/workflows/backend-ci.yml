@@ -39,13 +39,13 @@ jobs:
           uv venv
           uv pip install -e ".[dev]"
 
-      - name: Run Black formatter check
+      - name: Run Ruff linter
         working-directory: ./backend
-        run: uv run black --check .
+        run: uv run ruff check .
 
-      - name: Run Flake8 linter
+      - name: Run Ruff formatter check
         working-directory: ./backend
-        run: uv run flake8 .
+        run: uv run ruff format --check .
 
       - name: Run MyPy type checker
         working-directory: ./backend

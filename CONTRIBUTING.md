@@ -206,8 +206,8 @@ Before submitting a PR, run:
 ```bash
 # Backend
 cd backend
-uv run black .           # Format code
-uv run flake8 .         # Lint
+uv run ruff format .           # Format code
+uv run ruff check .         # Lint
 uv run mypy app         # Type check
 uv run pytest           # Run tests
 
