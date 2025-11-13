@@ -143,8 +143,8 @@ bun run test:ui          # Run tests with UI
 
 ```bash
 cd backend
-uv run black .           # Format code
-uv run flake8 .         # Lint code
+uv run ruff format .           # Format code
+uv run ruff check .         # Lint code
 uv run mypy app         # Type checking
 ```
 
