@@ -1,0 +1,122 @@
+name: Pull Request Checks
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  validate-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check PR title format
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          if [[ ! $PR_TITLE =~ ^(feat|fix|docs|style|refactor|test|chore|ci):\ .+ ]]; then
+            echo "PR title must follow conventional commits format: type: description"
+            echo "Valid types: feat, fix, docs, style, refactor, test, chore, ci"
+            exit 1
+          fi
+
+      - name: Check for merge conflicts
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          BASE_BRANCH=${{ github.event.pull_request.base.ref }}
+          git fetch origin $BASE_BRANCH
+          if ! git merge --no-commit --no-ff origin/$BASE_BRANCH; then
+            echo "This PR has merge conflicts with $BASE_BRANCH"
+            git merge --abort
+            exit 1
+          fi
+          git merge --abort
+
+      - name: Check file size
+        run: |
+          MAX_SIZE=1048576  # 1MB in bytes
+          LARGE_FILES=$(find . -type f -size +${MAX_SIZE}c -not -path "*/node_modules/*" -not -path "*/.git/*" -not -path "*/dist/*" -not -path "*/build/*")
+          if [ -n "$LARGE_FILES" ]; then
+            echo "The following files exceed 1MB:"
+            echo "$LARGE_FILES"
+            echo "Please avoid committing large files. Use Git LFS if necessary."
+            exit 1
+          fi
+
+  backend-quality:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.changed_files, 'backend/')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        working-directory: ./backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run code quality checks
+        working-directory: ./backend
+        run: |
+          black --check .
+          flake8 .
+          pytest --cov=app --cov-report=term
+
+  frontend-quality:
+    runs-on: ubuntu-latest
+    if: contains(github.event.pull_request.changed_files, 'frontend/')
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Run code quality checks
+        working-directory: ./frontend
+        run: |
+          npm run format:check
+          npm run lint
+          npm run test
+
+  security-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy results to GitHub Security
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'

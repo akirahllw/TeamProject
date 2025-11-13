@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  backend-dev:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: scrumflow-backend-dev
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./data/scrumflow.db
+      - DEBUG=True
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:5173
+    volumes:
+      - ./backend:/app
+      - backend-data:/app/data
+    networks:
+      - scrumflow-network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    restart: unless-stopped
+
+  frontend-dev:
+    image: node:20-alpine
+    container_name: scrumflow-frontend-dev
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - scrumflow-network
+    command: sh -c "npm install && npm run dev"
+    depends_on:
+      - backend-dev
+    restart: unless-stopped
+
+volumes:
+  backend-data:
+    driver: local
+
+networks:
+  scrumflow-network:
+    driver: bridge
