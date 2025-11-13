@@ -15,8 +15,12 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
-    username: Mapped[str] = mapped_column(String(100), unique=True, index=True, nullable=False)
-    email: Mapped[str] = mapped_column(String(255), unique=True, index=True, nullable=False)
+    username: Mapped[str] = mapped_column(
+        String(100), unique=True, index=True, nullable=False
+    )
+    email: Mapped[str] = mapped_column(
+        String(255), unique=True, index=True, nullable=False
+    )
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     full_name: Mapped[Optional[str]] = mapped_column(String(200))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
@@ -24,7 +28,9 @@ class User(Base):
 
     # --- Relationships ---
 
-    owned_projects: Mapped[List["Project"]] = relationship("Project", back_populates="owner")
+    owned_projects: Mapped[List["Project"]] = relationship(
+        "Project", back_populates="owner"
+    )
 
     project_associations: Mapped[List["ProjectMember"]] = relationship(
         "ProjectMember", back_populates="user", cascade="all, delete-orphan"

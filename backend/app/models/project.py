@@ -23,7 +23,9 @@ class ProjectMember(Base):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), primary_key=True)
-    role: Mapped[ProjectRole] = mapped_column(Enum(ProjectRole), default=ProjectRole.MEMBER)
+    role: Mapped[ProjectRole] = mapped_column(
+        Enum(ProjectRole), default=ProjectRole.MEMBER
+    )
 
     user: Mapped["User"] = relationship(back_populates="project_associations")
     project: Mapped["Project"] = relationship(back_populates="member_associations")
@@ -37,7 +39,9 @@ class Project(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
-    key: Mapped[str] = mapped_column(String(10), unique=True, index=True, nullable=False)
+    key: Mapped[str] = mapped_column(
+        String(10), unique=True, index=True, nullable=False
+    )
     description: Mapped[Optional[str]] = mapped_column(Text)
 
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
@@ -46,7 +50,9 @@ class Project(Base):
 
     owner: Mapped["User"] = relationship("User", back_populates="owned_projects")
 
-    issues: Mapped[List["Issue"]] = relationship("Issue", back_populates="project", cascade="all, delete-orphan")
+    issues: Mapped[List["Issue"]] = relationship(
+        "Issue", back_populates="project", cascade="all, delete-orphan"
+    )
 
     member_associations: Mapped[List["ProjectMember"]] = relationship(
         "ProjectMember", back_populates="project", cascade="all, delete-orphan"

@@ -48,11 +48,19 @@ class Issue(Base):
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text)
 
-    status: Mapped[IssueStatus] = mapped_column(Enum(IssueStatus), default=IssueStatus.TO_DO, nullable=False)
-    priority: Mapped[IssuePriority] = mapped_column(Enum(IssuePriority), default=IssuePriority.MEDIUM, nullable=False)
-    issue_type: Mapped[IssueType] = mapped_column(Enum(IssueType), default=IssueType.TASK, nullable=False)
+    status: Mapped[IssueStatus] = mapped_column(
+        Enum(IssueStatus), default=IssueStatus.TO_DO, nullable=False
+    )
+    priority: Mapped[IssuePriority] = mapped_column(
+        Enum(IssuePriority), default=IssuePriority.MEDIUM, nullable=False
+    )
+    issue_type: Mapped[IssueType] = mapped_column(
+        Enum(IssueType), default=IssueType.TASK, nullable=False
+    )
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
@@ -67,16 +75,24 @@ class Issue(Base):
 
     project: Mapped["Project"] = relationship("Project", back_populates="issues")
 
-    reporter: Mapped["User"] = relationship("User", back_populates="reported_issues", foreign_keys=[reporter_id])
+    reporter: Mapped["User"] = relationship(
+        "User", back_populates="reported_issues", foreign_keys=[reporter_id]
+    )
 
     assignee: Mapped[Optional["User"]] = relationship(
         "User", back_populates="assigned_issues", foreign_keys=[assignee_id]
     )
 
-    comments: Mapped[List["Comment"]] = relationship("Comment", back_populates="issue", cascade="all, delete-orphan")
+    comments: Mapped[List["Comment"]] = relationship(
+        "Comment", back_populates="issue", cascade="all, delete-orphan"
+    )
 
-    parent: Mapped[Optional["Issue"]] = relationship("Issue", back_populates="sub_tasks", remote_side=[id])
-    sub_tasks: Mapped[List["Issue"]] = relationship("Issue", back_populates="parent", cascade="all, delete-orphan")
+    parent: Mapped[Optional["Issue"]] = relationship(
+        "Issue", back_populates="sub_tasks", remote_side=[id]
+    )
+    sub_tasks: Mapped[List["Issue"]] = relationship(
+        "Issue", back_populates="parent", cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<Issue(id={self.id}, title='{self.title}', status='{self.status}')>"
@@ -87,7 +103,9 @@ class Comment(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     body: Mapped[str] = mapped_column(Text, nullable=False)
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
 
     issue_id: Mapped[int] = mapped_column(ForeignKey("issues.id"), nullable=False)
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
