@@ -36,10 +36,19 @@ Additionally, we aim to **gain experience in working as a team**, **designing ef
 
 ### Prerequisites
 
-- **Node.js** 20.x or higher
-- **Python** 3.11 or higher
+- **Bun** (recommended) or Node.js 20.x+
+- **uv** (recommended) or Python 3.11+
 - **Docker** and **Docker Compose** (optional, for containerized setup)
 - **Git** for version control
+
+Install modern tools:
+```bash
+# Install bun (https://bun.sh)
+curl -fsSL https://bun.sh/install | bash
+
+# Install uv (https://docs.astral.sh/uv/)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
 ### Local Development Setup
 
@@ -67,12 +76,15 @@ docker-compose -f docker-compose.dev.yml up
 # Navigate to backend directory
 cd backend
 
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Create virtual environment and install dependencies with uv (recommended)
+uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+uv pip install -e ".[dev]"
 
-# Install dependencies
-pip install -r requirements.txt
+# Or use traditional pip
+# python -m venv venv
+# source venv/bin/activate
+# pip install -e ".[dev]"
 
 # Copy environment file and configure
 cp .env.example .env
@@ -91,8 +103,11 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 # Navigate to frontend directory
 cd frontend
 
-# Install dependencies
-npm install
+# Install dependencies with bun (recommended)
+bun install
+
+# Or use npm
+# npm install
 
 # Copy environment file and configure
 cp .env.example .env
@@ -108,18 +123,18 @@ npm run dev
 
 ```bash
 cd backend
-pytest                    # Run all tests
-pytest --cov=app         # Run tests with coverage
-pytest -v                # Verbose output
+uv run pytest                    # Run all tests
+uv run pytest --cov=app         # Run tests with coverage
+uv run pytest -v                # Verbose output
 ```
 
 **Frontend Tests:**
 
 ```bash
 cd frontend
-npm run test             # Run tests
-npm run test:coverage    # Run tests with coverage
-npm run test:ui          # Run tests with UI
+bun run test             # Run tests
+bun run test:coverage    # Run tests with coverage
+bun run test:ui          # Run tests with UI
 ```
 
 ### Code Quality & Linting
@@ -128,18 +143,18 @@ npm run test:ui          # Run tests with UI
 
 ```bash
 cd backend
-black .                  # Format code
-flake8 .                # Lint code
-mypy app                # Type checking
+uv run black .           # Format code
+uv run flake8 .         # Lint code
+uv run mypy app         # Type checking
 ```
 
 **Frontend:**
 
 ```bash
 cd frontend
-npm run format          # Format code with Prettier
-npm run lint            # Lint code with ESLint
-npm run lint:fix        # Auto-fix linting issues
+bun run format          # Format code with Prettier
+bun run lint            # Lint code with ESLint
+bun run lint:fix        # Auto-fix linting issues
 ```
 
 ---
