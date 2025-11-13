@@ -168,6 +168,13 @@ def test_create_project():
     assert project.id is not None
 ```
 
+Install dependencies and run tests with:
+```bash
+cd backend
+uv pip install -e ".[dev]"
+uv run pytest
+```
+
 ### Frontend Tests
 
 - Write unit tests for components
@@ -186,6 +193,12 @@ test('renders project name', () => {
 })
 ```
 
+Run tests with:
+```bash
+cd frontend
+bun run test
+```
+
 ## Running Quality Checks
 
 Before submitting a PR, run:
@@ -193,16 +206,16 @@ Before submitting a PR, run:
 ```bash
 # Backend
 cd backend
-black .                  # Format code
-flake8 .                # Lint
-mypy app                # Type check
-pytest                  # Run tests
+uv run black .           # Format code
+uv run flake8 .         # Lint
+uv run mypy app         # Type check
+uv run pytest           # Run tests
 
 # Frontend
 cd frontend
-npm run format          # Format code
-npm run lint            # Lint
-npm run test            # Run tests
+bun run format          # Format code
+bun run lint            # Lint
+bun run test            # Run tests
 ```
 
 Or use the Makefile:

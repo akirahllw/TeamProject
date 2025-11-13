@@ -8,46 +8,46 @@ help: ## Show this help message
 
 install: ## Install all dependencies
 	@echo "Installing backend dependencies..."
-	cd backend && pip install -r requirements.txt
+	cd backend && uv venv && uv pip install -e ".[dev]"
 	@echo "Installing frontend dependencies..."
-	cd frontend && npm install
+	cd frontend && bun install
 	@echo "All dependencies installed!"
 
 dev: ## Start development servers (Docker)
-	docker-compose -f docker-compose.dev.yml up
+	docker compose -f docker-compose.dev.yml up
 
 dev-build: ## Build and start development servers
-	docker-compose -f docker-compose.dev.yml up --build
+	docker compose -f docker-compose.dev.yml up --build
 
 prod: ## Start production servers (Docker)
-	docker-compose up -d
+	docker compose up -d
 
 prod-build: ## Build and start production servers
-	docker-compose up -d --build
+	docker compose up -d --build
 
 test: ## Run all tests
 	@echo "Running backend tests..."
-	cd backend && pytest
+	cd backend && uv run pytest
 	@echo "Running frontend tests..."
-	cd frontend && npm run test
+	cd frontend && bun run test
 
 test-coverage: ## Run tests with coverage
 	@echo "Running backend tests with coverage..."
-	cd backend && pytest --cov=app --cov-report=term --cov-report=html
+	cd backend && uv run pytest --cov=app --cov-report=term --cov-report=html
 	@echo "Running frontend tests with coverage..."
-	cd frontend && npm run test:coverage
+	cd frontend && bun run test:coverage
 
 lint: ## Run linters for both backend and frontend
 	@echo "Linting backend..."
-	cd backend && black --check . && flake8 . && mypy app
+	cd backend && uv run black --check . && uv run flake8 . && uv run mypy app
 	@echo "Linting frontend..."
-	cd frontend && npm run lint && npm run format:check
+	cd frontend && bun run lint && bun run format:check
 
 lint-fix: ## Fix linting issues
 	@echo "Fixing backend formatting..."
-	cd backend && black .
+	cd backend && uv run black .
 	@echo "Fixing frontend linting..."
-	cd frontend && npm run lint:fix && npm run format
+	cd frontend && bun run lint:fix && bun run format
 
 clean: ## Clean up temporary files and caches
 	@echo "Cleaning up..."
@@ -62,44 +62,44 @@ clean: ## Clean up temporary files and caches
 	@echo "Cleanup complete!"
 
 build: ## Build Docker images
-	docker-compose build
+	docker compose build
 
 up: ## Start all services
-	docker-compose up -d
+	docker compose up -d
 
 down: ## Stop all services
-	docker-compose down
+	docker compose down
 
 down-volumes: ## Stop all services and remove volumes
-	docker-compose down -v
+	docker compose down -v
 
 logs: ## View logs from all services
-	docker-compose logs -f
+	docker compose logs -f
 
 logs-backend: ## View backend logs
-	docker-compose logs -f backend
+	docker compose logs -f backend
 
 logs-frontend: ## View frontend logs
-	docker-compose logs -f frontend
+	docker compose logs -f frontend
 
 migrate: ## Run database migrations
-	cd backend && alembic upgrade head
+	cd backend && uv run alembic upgrade head
 
 migrate-create: ## Create a new migration
 	@read -p "Enter migration message: " msg; \
-	cd backend && alembic revision --autogenerate -m "$$msg"
+	cd backend && uv run alembic revision --autogenerate -m "$$msg"
 
 shell-backend: ## Open shell in backend container
-	docker-compose exec backend /bin/bash
+	docker compose exec backend /bin/bash
 
 shell-frontend: ## Open shell in frontend container
-	docker-compose exec frontend /bin/sh
+	docker compose exec frontend /bin/sh
 
 ps: ## Show running containers
-	docker-compose ps
+	docker compose ps
 
 restart: ## Restart all services
-	docker-compose restart
+	docker compose restart
 
 health: ## Check health of services
 	@echo "Checking backend health..."
