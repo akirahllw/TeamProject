@@ -1,67 +1,101 @@
 import React, { useState } from 'react';
+import { ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Input } from '../../../components/Input'; 
+import { Button } from '../../../components/Button';
+import { FormWrapper } from '../../../components/Form';
 
-const LoginForm = () => {
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+export const LoginForm = () => {
+  const [formData, setFormData] = useState({ email: '', password: '' });
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (!formData.email) newErrors.email = 'Email is required';
+    if (!formData.password) newErrors.password = 'Password is required';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Logging in with:', { email, password });
+    if (!validate()) return;
+
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      if (formData.email === 'fail@test.com') {
+        throw new Error('Invalid credentials. Try again.');
+      }
+
+      setIsSuccess(true);
+      console.log('Success', formData);
+    } catch (err) {
+      setErrors({ general: (err as Error).message });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="email" className="block text-sm font-semibold text-gray-800 mb-2">
-            Work email
-          </label>
-          <input 
-            type="email" 
-            id="email" 
-            name="email" 
-            placeholder="you@company.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-            required
-          />
+    <FormWrapper 
+      title="Welcome back" 
+      subtitle="Please enter your details to sign in."
+      onSubmit={handleSubmit}
+    >
+      {errors.general && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700 text-sm">
+          <AlertCircle size={16} />
+          <span>{errors.general}</span>
         </div>
-        <div>
-          <div className="flex justify-between items-baseline">
-            <label htmlFor="password" className="block text-sm font-semibold text-gray-800 mb-2">
-              Password
-            </label>
-            <a href="#" className="text-sm text-blue-600 hover:underline">Forgot password?</a>
-          </div>
-          <input 
-            type="password" 
-            id="password" 
-            name="password" 
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
-            required
-          />
+      )}
+      
+      {isSuccess && (
+        <div className="p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 text-green-700 text-sm">
+          <CheckCircle2 size={16} />
+          <span>Success!</span>
         </div>
-        <button 
-          type="submit" 
-          className="w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out"
-        >
-          Log in
-        </button>
-      </form>
-      <div className="mt-8 flex items-center justify-center text-sm text-gray-500">
-        <span className="flex-grow border-t border-gray-300"></span>
-        <p className="mx-4 flex-shrink-0">
-          Don't have an account? 
-          <a href="#" className="text-blue-600 hover:underline font-medium">Sign up</a>
-        </p>
-        <span className="flex-grow border-t border-gray-300"></span>
+      )}
+
+      <Input
+        label="Email Address"
+        placeholder="student@university.edu"
+        type="email"
+        value={formData.email}
+        error={errors.email}
+        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+      />
+
+      <Input
+        label="Password"
+        placeholder="••••••••"
+        type="password"
+        value={formData.password}
+        error={errors.password}
+        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+      />
+
+      <div className="flex justify-end">
+        <a href="#" className="text-xs font-medium text-blue-600 hover:text-blue-700">
+          Forgot password?
+        </a>
       </div>
-    </>
+
+      <Button type="submit" isLoading={isLoading} icon={<ArrowRight size={18} />}>
+        Log in
+      </Button>
+
+      <div className="text-center pt-4 border-t border-slate-100 mt-4">
+        <p className="text-sm text-slate-500">
+          Don't have an account?{' '}
+          <a href="#" className="font-semibold text-blue-600 hover:text-blue-700">
+            Sign up
+          </a>
+        </p>
+      </div>
+    </FormWrapper>
   );
 };
-
-export default LoginForm;
