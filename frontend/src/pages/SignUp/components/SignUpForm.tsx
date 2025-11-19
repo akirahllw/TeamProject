@@ -1,20 +1,38 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, AlertCircle } from 'lucide-react';
 import { Input } from '../../../components/Input'; 
 import { Button } from '../../../components/Button';
 import { FormWrapper } from '../../../components/Form';
+// import { authService } from '../../../services/authService'; 
 
-export const LoginForm = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
+export const SignUpForm = () => {
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+  
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
+    
+    if (!formData.fullName) newErrors.fullName = 'Full name is required';
     if (!formData.email) newErrors.email = 'Email is required';
-    if (!formData.password) newErrors.password = 'Password is required';
+    
+    if (!formData.password) {
+        newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+        newErrors.password = 'Password must be at least 6 chars';
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -26,25 +44,21 @@ export const LoginForm = () => {
     setIsLoading(true);
     setErrors({});
 
+   //Simulate API call
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
-      if (formData.email === 'fail@test.com') {
-        throw new Error('Invalid credentials. Try again.');
-      }
-
-      setIsSuccess(true);
-      console.log('Success', formData);
+      console.log('Account created', formData);
     } catch (err) {
-      setErrors({ general: (err as Error).message });
+      setErrors({ general: 'Failed to create account. Try again.' });
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   return (
     <FormWrapper 
-      title="Welcome back" 
-      subtitle="Please enter your details to sign in."
+      title="Create an account" 
+      subtitle="Get started with your free account today."
       onSubmit={handleSubmit}
     >
       {errors.general && (
@@ -53,18 +67,19 @@ export const LoginForm = () => {
           <span>{errors.general}</span>
         </div>
       )}
-      
-      {isSuccess && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 text-green-700 text-sm">
-          <CheckCircle2 size={16} />
-          <span>Success!</span>
-        </div>
-      )}
+
+      <Input
+        label="Full Name"
+        placeholder="John Doe"
+        value={formData.fullName}
+        error={errors.fullName}
+        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+      />
 
       <Input
         label="Email Address"
-        placeholder="student@university.edu"
         type="email"
+        placeholder="student@university.edu"
         value={formData.email}
         error={errors.email}
         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -72,28 +87,31 @@ export const LoginForm = () => {
 
       <Input
         label="Password"
-        placeholder="••••••••"
         type="password"
+        placeholder="••••••••"
         value={formData.password}
         error={errors.password}
         onChange={(e) => setFormData({ ...formData, password: e.target.value })}
       />
 
-      <div className="flex justify-end">
-        <a href="#" className="text-xs font-medium text-blue-600 hover:text-blue-700">
-          Forgot password?
-        </a>
-      </div>
+      <Input
+        label="Confirm Password"
+        type="password"
+        placeholder="••••••••"
+        value={formData.confirmPassword}
+        error={errors.confirmPassword}
+        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+      />
 
       <Button type="submit" isLoading={isLoading} icon={<ArrowRight size={18} />}>
-        Log in
+        Create Account
       </Button>
 
       <div className="text-center pt-4 border-t border-slate-100 mt-4">
         <p className="text-sm text-slate-500">
-          Don't have an account?{' '}
-         <Link to="/create" className="font-semibold text-blue-600 hover:text-blue-700 hover:underline">
-            Sign up
+          Already have an account?{' '}
+          <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-700 hover:underline">
+            Log in
           </Link>
         </p>
       </div>
