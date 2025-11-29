@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.db.base import Base, get_db
 from app.main import app
-from app.models.project import Project, ProjectMember
+from app.models.project import Project
 from app.models.user import User
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -166,7 +166,6 @@ def test_get_users_with_search():
 
 
 def test_get_users_with_filter():
-    user = setup_test_user("activeuser", "active@example.com")
     response = client.get("/api/v1/users/?is_active=true")
     assert response.status_code == 200
     data = response.json()

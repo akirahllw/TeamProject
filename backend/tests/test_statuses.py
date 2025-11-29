@@ -7,7 +7,6 @@ from sqlalchemy.orm import sessionmaker
 from app.db.base import Base, get_db
 from app.main import app
 from app.models.project import Project
-from app.models.status import Status
 from app.models.user import User
 
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"

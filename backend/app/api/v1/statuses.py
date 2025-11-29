@@ -62,7 +62,7 @@ def get_statuses(
             raise HTTPException(
                 status_code=400,
                 detail=f"Invalid category. Must be one of: {[c.value for c in StatusCategory]}",
-            )
+            ) from None
 
     if project_id:
         query = query.filter(Status.project_id == project_id)
@@ -98,7 +98,7 @@ def create_status(status: StatusCreate, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=400,
             detail=f"Invalid category. Must be one of: {[c.value for c in StatusCategory]}",
-        )
+        ) from None
 
     if status.color and not status.color.startswith("#"):
         raise HTTPException(
@@ -150,7 +150,7 @@ def update_status(status_id: int, status: StatusUpdate, db: Session = Depends(ge
             raise HTTPException(
                 status_code=400,
                 detail=f"Invalid category. Must be one of: {[c.value for c in StatusCategory]}",
-            )
+            ) from None
 
     db.commit()
     db.refresh(db_status)

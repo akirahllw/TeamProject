@@ -151,7 +151,7 @@ def search_issues(
             raise HTTPException(
                 status_code=400,
                 detail=f"Invalid status. Must be one of: {[s.value for s in IssueStatus]}",
-            )
+            ) from None
 
     issues = query.offset(skip).limit(limit).all()
 

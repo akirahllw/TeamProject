@@ -65,7 +65,7 @@ def get_sprints(
             raise HTTPException(
                 status_code=400,
                 detail=f"Invalid status. Must be one of: {[s.value for s in SprintStatus]}",
-            )
+            ) from None
 
     sprints = query.order_by(Sprint.start_date.desc()).offset(skip).limit(limit).all()
     return sprints
