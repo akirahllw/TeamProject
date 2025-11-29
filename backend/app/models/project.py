@@ -4,15 +4,14 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Enum, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base import Base  # Import Base from new location
+from app.db.base import Base
 
-# This block is only processed by type-checkers, not at runtime
 if TYPE_CHECKING:
     from .issue import Issue
+    from .sprint import Sprint
     from .user import User
 
 
-# Enum for Project-level roles
 class ProjectRole(str, enum.Enum):
     ADMIN = "ADMIN"
     MEMBER = "MEMBER"
@@ -47,8 +46,6 @@ class Project(Base):
 
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
-    # --- Relationships ---
-
     owner: Mapped["User"] = relationship("User", back_populates="owned_projects")
 
     issues: Mapped[list["Issue"]] = relationship(
@@ -57,6 +54,10 @@ class Project(Base):
 
     member_associations: Mapped[list["ProjectMember"]] = relationship(
         "ProjectMember", back_populates="project", cascade="all, delete-orphan"
+    )
+
+    sprints: Mapped[list["Sprint"]] = relationship(
+        "Sprint", back_populates="project", cascade="all, delete-orphan"
     )
 
     def __repr__(self):

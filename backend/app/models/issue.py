@@ -12,15 +12,14 @@ from sqlalchemy import (
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
-from app.db.base import Base  # Import Base from new location
+from app.db.base import Base
 
-# This block is only processed by type-checkers, not at runtime
 if TYPE_CHECKING:
     from .project import Project
+    from .sprint import Sprint
     from .user import User
 
 
-# --- Enums for Issue fields ---
 class IssueType(str, enum.Enum):
     TASK = "TASK"
     BUG = "BUG"
@@ -66,13 +65,11 @@ class Issue(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
-    # --- Foreign Keys ---
     project_id: Mapped[int] = mapped_column(ForeignKey("projects.id"), nullable=False)
     reporter_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     assignee_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     parent_issue_id: Mapped[int | None] = mapped_column(ForeignKey("issues.id"))
-
-    # --- Relationships ---
+    sprint_id: Mapped[int | None] = mapped_column(ForeignKey("sprints.id"))
 
     project: Mapped["Project"] = relationship("Project", back_populates="issues")
 
@@ -95,6 +92,8 @@ class Issue(Base):
         "Issue", back_populates="parent", cascade="all, delete-orphan"
     )
 
+    sprint: Mapped[Optional["Sprint"]] = relationship("Sprint", back_populates="issues")
+
     def __repr__(self):
         return f"<Issue(id={self.id}, title='{self.title}', status='{self.status}')>"
 
@@ -110,8 +109,6 @@ class Comment(Base):
 
     issue_id: Mapped[int] = mapped_column(ForeignKey("issues.id"), nullable=False)
     author_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-
-    # --- Relationships ---
 
     issue: Mapped["Issue"] = relationship("Issue", back_populates="comments")
     author: Mapped["User"] = relationship("User", back_populates="comments")
