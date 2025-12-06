@@ -1,116 +1,91 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { ArrowRight, AlertCircle } from 'lucide-react';
-import { Input } from '../../../components/Input'; 
+
+import { Input } from '../../../components/Input';
 import { Button } from '../../../components/Button';
 import { FormWrapper } from '../../../components/Form';
-// import { authService } from '../../../services/authService'; 
+import { signUpSchema, SignUpFormData } from '../schemas/signup';
 
 export const SignUpForm = () => {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
+  const navigate = useNavigate();
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting }
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: { fullName: '', email: '', password: '', confirmPassword: '' }
   });
-  
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState(false);
 
-  const validate = () => {
-    const newErrors: { [key: string]: string } = {};
-    
-    if (!formData.fullName) newErrors.fullName = 'Full name is required';
-    if (!formData.email) newErrors.email = 'Email is required';
-    
-    if (!formData.password) {
-        newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-        newErrors.password = 'Password must be at least 6 chars';
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validate()) return;
-
-    setIsLoading(true);
-    setErrors({});
-
-   //Simulate API call
+  const onSubmit = async (data: SignUpFormData) => {
+    setServerError(null);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log('Account created', formData);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      navigate('/');
     } catch (err) {
-      setErrors({ general: 'Failed to create account. Try again.' });
-    } finally {
-      setIsLoading(false);
+      setServerError((err as Error).message);
     }
-  }
+  };
 
   return (
     <FormWrapper 
       title="Create an account" 
       subtitle="Get started with your free account today."
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)}
     >
-      {errors.general && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700 text-sm">
+      {serverError && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700 text-sm mb-4">
           <AlertCircle size={16} />
-          <span>{errors.general}</span>
+          <span>{serverError}</span>
         </div>
       )}
-
-      <Input
-        label="Full Name"
-        placeholder="John Doe"
-        value={formData.fullName}
-        error={errors.fullName}
-        onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+      <Controller
+        name="fullName"
+        control={control}
+        render={({ field: { ref, ...field } }) => (
+          <Input {...field} label="Full Name" placeholder="John Doe" error={errors.fullName?.message} />
+        )}
       />
 
-      <Input
-        label="Email Address"
-        type="email"
-        placeholder="student@university.edu"
-        value={formData.email}
-        error={errors.email}
-        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+      <Controller
+        name="email"
+        control={control}
+        render={({ field: { ref, ...field } }) => (
+          <Input {...field} label="Email Address" type="email" placeholder="student@university.edu" error={errors.email?.message} />
+        )}
       />
 
-      <Input
-        label="Password"
-        type="password"
-        placeholder="••••••••"
-        value={formData.password}
-        error={errors.password}
-        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+      <Controller
+        name="password"
+        control={control}
+        render={({ field: { ref, ...field } }) => (
+          <Input {...field} label="Password" type="password" placeholder="••••••••" error={errors.password?.message} />
+        )}
       />
 
-      <Input
-        label="Confirm Password"
-        type="password"
-        placeholder="••••••••"
-        value={formData.confirmPassword}
-        error={errors.confirmPassword}
-        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+      <Controller
+        name="confirmPassword"
+        control={control}
+        render={({ field: { ref, ...field } }) => (
+          <Input {...field} label="Confirm Password" type="password" placeholder="••••••••" error={errors.confirmPassword?.message} />
+        )}
       />
 
-      <Button type="submit" isLoading={isLoading} icon={<ArrowRight size={18} />}>
-        Create Account
-      </Button>
+      <div className="pt-2">
+        <Button type="submit" fullWidth isLoading={isSubmitting} icon={<ArrowRight size={18} />}>
+          Create Account
+        </Button>
+      </div>
 
       <div className="text-center pt-4 border-t border-slate-100 mt-4">
         <p className="text-sm text-slate-500">
           Already have an account?{' '}
-          <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-700 hover:underline">
+          <Link to="/" className="font-semibold text-blue-600 hover:text-blue-700 hover:underline">
             Log in
           </Link>
         </p>

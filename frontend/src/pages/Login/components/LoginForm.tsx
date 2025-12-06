@@ -1,43 +1,35 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
-import { Input } from '../../../components/Input'; 
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ArrowRight, AlertCircle } from 'lucide-react';
+
+import { Input } from '../../../components/Input';
 import { Button } from '../../../components/Button';
 import { FormWrapper } from '../../../components/Form';
+import { loginSchema, LoginFormData } from '../schemas/login';
 
 export const LoginForm = () => {
-  const [formData, setFormData] = useState({ email: '', password: '' });
-  const [errors, setErrors] = useState<{ [key: string]: string }>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const navigate = useNavigate();
+  const [serverError, setServerError] = useState<string | null>(null);
 
-  const validate = () => {
-    const newErrors: { [key: string]: string } = {};
-    if (!formData.email) newErrors.email = 'Email is required';
-    if (!formData.password) newErrors.password = 'Password is required';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting }
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' }
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validate()) return;
-
-    setIsLoading(true);
-    setErrors({});
-
+  const onSubmit = async (data: LoginFormData) => {
+    setServerError(null);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      if (formData.email === 'fail@test.com') {
-        throw new Error('Invalid credentials. Try again.');
-      }
-
-      setIsSuccess(true);
-      console.log('Success', formData);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (data.email === 'error@test.com') throw new Error("Invalid credentials.");
+      navigate('/welcome');
     } catch (err) {
-      setErrors({ general: (err as Error).message });
-    } finally {
-      setIsLoading(false);
+      setServerError((err as Error).message);
     }
   };
 
@@ -45,54 +37,63 @@ export const LoginForm = () => {
     <FormWrapper 
       title="Welcome back" 
       subtitle="Please enter your details to sign in."
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)} 
     >
-      {errors.general && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700 text-sm">
+      {serverError && (
+        <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2 text-red-700 text-sm mb-4">
           <AlertCircle size={16} />
-          <span>{errors.general}</span>
+          <span>{serverError}</span>
         </div>
       )}
-      
-      {isSuccess && (
-        <div className="p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2 text-green-700 text-sm">
-          <CheckCircle2 size={16} />
-          <span>Success!</span>
+      <Controller
+        name="email"
+        control={control}
+        render={({ field: { ref, ...field } }) => (
+          <Input
+            {...field}
+            label="Email Address"
+            placeholder="student@university.edu"
+            type="email"
+            error={errors.email?.message}
+          />
+        )}
+      />
+
+      <div className="space-y-1">
+        <div className="flex justify-between items-center">
+            <label className="block text-sm font-semibold text-slate-700">Password</label>
+            <a href="#" className="text-xs font-medium text-blue-600 hover:text-blue-700">Forgot password?</a>
         </div>
-      )}
-
-      <Input
-        label="Email Address"
-        placeholder="student@university.edu"
-        type="email"
-        value={formData.email}
-        error={errors.email}
-        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-      />
-
-      <Input
-        label="Password"
-        placeholder="••••••••"
-        type="password"
-        value={formData.password}
-        error={errors.password}
-        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-      />
-
-      <div className="flex justify-end">
-        <a href="#" className="text-xs font-medium text-blue-600 hover:text-blue-700">
-          Forgot password?
-        </a>
+        
+        <Controller
+          name="password"
+          control={control}
+          render={({ field: { ref, ...field } }) => (
+            <Input
+              {...field}
+              label=""
+              placeholder="••••••••"
+              type="password"
+              className="mt-0" 
+              error={errors.password?.message}
+            />
+          )}
+        />
       </div>
 
-      <Button type="submit" isLoading={isLoading} icon={<ArrowRight size={18} />}>
+      <Button 
+        type="submit" 
+        fullWidth 
+        isLoading={isSubmitting} 
+        icon={<ArrowRight size={18} />}
+      >
         Log in
       </Button>
 
       <div className="text-center pt-4 border-t border-slate-100 mt-4">
         <p className="text-sm text-slate-500">
           Don't have an account?{' '}
-         <Link to="/create" className="font-semibold text-blue-600 hover:text-blue-700 hover:underline">
+          <Link to="/create" className="font-semibold text-blue-600 hover:text-blue-700 hover:underline">
             Sign up
           </Link>
         </p>
