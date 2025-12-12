@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from .project import Project
     from .sprint import Sprint
     from .user import User
+    from .attachment import Attachment
 
 
 class IssueType(str, enum.Enum):
@@ -93,6 +94,10 @@ class Issue(Base):
     )
 
     sprint: Mapped[Optional["Sprint"]] = relationship("Sprint", back_populates="issues")
+
+    attachments: Mapped[list["Attachment"]] = relationship(
+        "Attachment", back_populates="issue", cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<Issue(id={self.id}, title='{self.title}', status='{self.status}')>"

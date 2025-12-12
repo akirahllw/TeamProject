@@ -10,6 +10,7 @@ from app.db.base import Base  # Import Base from new location
 if TYPE_CHECKING:
     from .issue import Comment, Issue
     from .project import Project, ProjectMember
+    from .attachment import Attachment
 
 
 class User(Base):
@@ -46,6 +47,10 @@ class User(Base):
     )
 
     comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="author")
+
+    attachments: Mapped[list["Attachment"]] = relationship(
+        "Attachment", back_populates="uploader"
+    )
 
     def __repr__(self):
         return f"<User(id={self.id}, username='{self.username}')>"
