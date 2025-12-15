@@ -2,7 +2,7 @@
 name = "scrumflow-backend"
 version = "1.0.0"
 description = "Lightweight Scrum management web app backend"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
     "fastapi==0.115.0",
     "uvicorn[standard]==0.32.0",

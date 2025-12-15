@@ -42,7 +42,7 @@ class StatusResponse(StatusBase):
 
 
 @router.get("/", response_model=list[StatusResponse])
-def get_statuses(
+async def get_statuses(
     category: str | None = Query(None),
     project_id: int | None = Query(None),
     skip: int = Query(0, ge=0),
@@ -72,7 +72,7 @@ def get_statuses(
 
 
 @router.get("/{status_id}", response_model=StatusResponse)
-def get_status(status_id: int, db: Session = Depends(get_db)):
+async def get_status(status_id: int, db: Session = Depends(get_db)):
     """
     Get a specific status by ID
     """
@@ -83,7 +83,7 @@ def get_status(status_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=StatusResponse, status_code=201)
-def create_status(status: StatusCreate, db: Session = Depends(get_db)):
+async def create_status(status: StatusCreate, db: Session = Depends(get_db)):
     """
     Create a new status
     """
@@ -121,7 +121,9 @@ def create_status(status: StatusCreate, db: Session = Depends(get_db)):
 
 
 @router.put("/{status_id}", response_model=StatusResponse)
-def update_status(status_id: int, status: StatusUpdate, db: Session = Depends(get_db)):
+async def update_status(
+    status_id: int, status: StatusUpdate, db: Session = Depends(get_db)
+):
     """
     Update an existing status
     """
@@ -158,7 +160,7 @@ def update_status(status_id: int, status: StatusUpdate, db: Session = Depends(ge
 
 
 @router.delete("/{status_id}", status_code=204)
-def delete_status(status_id: int, db: Session = Depends(get_db)):
+async def delete_status(status_id: int, db: Session = Depends(get_db)):
     """
     Delete a status
     Note: Since Issue uses IssueStatus enum directly (not a foreign key to Status),
@@ -185,7 +187,7 @@ def delete_status(status_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/{status_id}/issues", response_model=list[dict])
-def get_status_issues(
+async def get_status_issues(
     status_id: int,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),

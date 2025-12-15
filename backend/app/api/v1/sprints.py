@@ -42,7 +42,7 @@ class SprintResponse(SprintBase):
 
 
 @router.get("/", response_model=list[SprintResponse])
-def get_sprints(
+async def get_sprints(
     project_id: int | None = Query(None),
     status: str | None = Query(None),
     skip: int = Query(0, ge=0),
@@ -72,7 +72,7 @@ def get_sprints(
 
 
 @router.get("/{sprint_id}", response_model=SprintResponse)
-def get_sprint(sprint_id: int, db: Session = Depends(get_db)):
+async def get_sprint(sprint_id: int, db: Session = Depends(get_db)):
     """
     Get a specific sprint by ID
     """
@@ -83,7 +83,7 @@ def get_sprint(sprint_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=SprintResponse, status_code=201)
-def create_sprint(sprint: SprintCreate, db: Session = Depends(get_db)):
+async def create_sprint(sprint: SprintCreate, db: Session = Depends(get_db)):
     """
     Create a new sprint
     """
@@ -112,7 +112,9 @@ def create_sprint(sprint: SprintCreate, db: Session = Depends(get_db)):
 
 
 @router.put("/{sprint_id}", response_model=SprintResponse)
-def update_sprint(sprint_id: int, sprint: SprintUpdate, db: Session = Depends(get_db)):
+async def update_sprint(
+    sprint_id: int, sprint: SprintUpdate, db: Session = Depends(get_db)
+):
     """
     Update an existing sprint
     """
@@ -148,7 +150,7 @@ def update_sprint(sprint_id: int, sprint: SprintUpdate, db: Session = Depends(ge
 
 
 @router.delete("/{sprint_id}", status_code=204)
-def delete_sprint(sprint_id: int, db: Session = Depends(get_db)):
+async def delete_sprint(sprint_id: int, db: Session = Depends(get_db)):
     """
     Delete a sprint
     """
@@ -162,7 +164,7 @@ def delete_sprint(sprint_id: int, db: Session = Depends(get_db)):
 
 
 @router.patch("/{sprint_id}/start", response_model=SprintResponse)
-def start_sprint(sprint_id: int, db: Session = Depends(get_db)):
+async def start_sprint(sprint_id: int, db: Session = Depends(get_db)):
     """
     Start a sprint (change status to active)
     """
@@ -184,7 +186,7 @@ def start_sprint(sprint_id: int, db: Session = Depends(get_db)):
 
 
 @router.patch("/{sprint_id}/close", response_model=SprintResponse)
-def close_sprint(sprint_id: int, db: Session = Depends(get_db)):
+async def close_sprint(sprint_id: int, db: Session = Depends(get_db)):
     """
     Close a sprint (change status to closed)
     """
@@ -203,7 +205,7 @@ def close_sprint(sprint_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/{sprint_id}/issues", response_model=list[dict])
-def get_sprint_issues(
+async def get_sprint_issues(
     sprint_id: int,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
@@ -243,7 +245,9 @@ def get_sprint_issues(
 
 
 @router.post("/{sprint_id}/issues/{issue_id}", status_code=201)
-def add_issue_to_sprint(sprint_id: int, issue_id: int, db: Session = Depends(get_db)):
+async def add_issue_to_sprint(
+    sprint_id: int, issue_id: int, db: Session = Depends(get_db)
+):
     """
     Add an issue to a sprint
     """
@@ -269,7 +273,7 @@ def add_issue_to_sprint(sprint_id: int, issue_id: int, db: Session = Depends(get
 
 
 @router.delete("/{sprint_id}/issues/{issue_id}", status_code=204)
-def remove_issue_from_sprint(
+async def remove_issue_from_sprint(
     sprint_id: int, issue_id: int, db: Session = Depends(get_db)
 ):
     """
@@ -293,7 +297,7 @@ def remove_issue_from_sprint(
 
 
 @router.get("/{sprint_id}/stats", response_model=dict)
-def get_sprint_stats(sprint_id: int, db: Session = Depends(get_db)):
+async def get_sprint_stats(sprint_id: int, db: Session = Depends(get_db)):
     """
     Get sprint statistics (total issues, completed issues, etc.)
     """

@@ -89,7 +89,7 @@ def test_create_project_duplicate_key():
 
     project_data = {
         "name": "Test Project",
-        "key": "TEST",
+        "key": "TESTDUP",
         "description": "A test project",
         "owner_id": user.id,
     }

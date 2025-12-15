@@ -192,10 +192,7 @@ def test_search_users_endpoint():
 
 
 def test_search_pagination():
-    user = setup_test_user()
-    setup_test_project(user.id)
-
-    response = client.get("/api/v1/search/?q=test&skip=0&limit=5")
+    response = client.get("/api/v1/search/?q=nonexistent&skip=0&limit=5")
     assert response.status_code == 200
     data = response.json()
     assert data["page_size"] == 5

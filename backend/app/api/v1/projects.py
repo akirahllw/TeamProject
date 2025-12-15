@@ -44,7 +44,7 @@ class ProjectMemberResponse(BaseModel):
 
 
 @router.get("/", response_model=list[ProjectResponse])
-def get_projects(
+async def get_projects(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
     search: str | None = None,
@@ -68,7 +68,7 @@ def get_projects(
 
 
 @router.get("/{project_id}", response_model=ProjectResponse)
-def get_project(project_id: int, db: Session = Depends(get_db)):
+async def get_project(project_id: int, db: Session = Depends(get_db)):
     """
     Get a specific project by ID
     """
@@ -79,7 +79,7 @@ def get_project(project_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=ProjectResponse, status_code=201)
-def create_project(project: ProjectCreate, db: Session = Depends(get_db)):
+async def create_project(project: ProjectCreate, db: Session = Depends(get_db)):
     """
     Create a new project
     """
@@ -121,7 +121,7 @@ def create_project(project: ProjectCreate, db: Session = Depends(get_db)):
 
 
 @router.put("/{project_id}", response_model=ProjectResponse)
-def update_project(
+async def update_project(
     project_id: int, project: ProjectUpdate, db: Session = Depends(get_db)
 ):
     """
@@ -151,7 +151,7 @@ def update_project(
 
 
 @router.delete("/{project_id}", status_code=204)
-def delete_project(project_id: int, db: Session = Depends(get_db)):
+async def delete_project(project_id: int, db: Session = Depends(get_db)):
     """
     Delete a project
     """
@@ -165,7 +165,7 @@ def delete_project(project_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/{project_id}/issues", response_model=list[dict])
-def get_project_issues(
+async def get_project_issues(
     project_id: int,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
@@ -209,7 +209,7 @@ def get_project_issues(
 
 
 @router.get("/{project_id}/stats", response_model=dict)
-def get_project_stats(project_id: int, db: Session = Depends(get_db)):
+async def get_project_stats(project_id: int, db: Session = Depends(get_db)):
     """
     Get statistics for a project (total issues, open issues, etc.)
     """

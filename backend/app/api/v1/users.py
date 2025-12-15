@@ -47,7 +47,7 @@ class UserResponse(UserBase):
 
 
 @router.get("/", response_model=list[UserResponse])
-def get_users(
+async def get_users(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
     search: str | None = None,
@@ -75,7 +75,7 @@ def get_users(
 
 
 @router.get("/{user_id}", response_model=UserResponse)
-def get_user(user_id: int, db: Session = Depends(get_db)):
+async def get_user(user_id: int, db: Session = Depends(get_db)):
     """
     Get a specific user by ID
     """
@@ -86,7 +86,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/username/{username}", response_model=UserResponse)
-def get_user_by_username(username: str, db: Session = Depends(get_db)):
+async def get_user_by_username(username: str, db: Session = Depends(get_db)):
     """
     Get a specific user by username
     """
@@ -97,7 +97,7 @@ def get_user_by_username(username: str, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=UserResponse, status_code=201)
-def create_user(user: UserCreate, db: Session = Depends(get_db)):
+async def create_user(user: UserCreate, db: Session = Depends(get_db)):
     """
     Create a new user (admin only)
     """
@@ -132,7 +132,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
 
 @router.put("/{user_id}", response_model=UserResponse)
-def update_user(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):
+async def update_user(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):
     """
     Update an existing user
     """
@@ -180,7 +180,7 @@ def update_user(user_id: int, user: UserUpdate, db: Session = Depends(get_db)):
 
 
 @router.delete("/{user_id}", status_code=204)
-def delete_user(user_id: int, db: Session = Depends(get_db)):
+async def delete_user(user_id: int, db: Session = Depends(get_db)):
     """
     Delete a user (soft delete - set is_active to False)
     """
@@ -194,7 +194,7 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/{user_id}/issues", response_model=list[dict])
-def get_user_issues(
+async def get_user_issues(
     user_id: int,
     assigned: bool = Query(True),
     skip: int = Query(0, ge=0),
@@ -236,7 +236,7 @@ def get_user_issues(
 
 
 @router.get("/{user_id}/projects", response_model=list[dict])
-def get_user_projects(user_id: int, db: Session = Depends(get_db)):
+async def get_user_projects(user_id: int, db: Session = Depends(get_db)):
     """
     Get projects where user is a member or owner
     """

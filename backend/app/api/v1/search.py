@@ -28,7 +28,7 @@ class SearchResponse(BaseModel):
 
 
 @router.get("/", response_model=SearchResponse)
-def search(
+async def search(
     q: str = Query(..., min_length=1, description="Search query"),
     type: str | None = Query(None, description="Filter by type: issue, project, user"),
     project_id: int | None = Query(None, description="Filter by project"),
@@ -115,7 +115,7 @@ def search(
 
 
 @router.get("/issues", response_model=list[dict])
-def search_issues(
+async def search_issues(
     q: str = Query(..., min_length=1),
     project_id: int | None = Query(None),
     assignee_id: int | None = Query(None),
@@ -174,7 +174,7 @@ def search_issues(
 
 
 @router.get("/projects", response_model=list[dict])
-def search_projects(
+async def search_projects(
     q: str = Query(..., min_length=1),
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),
@@ -203,7 +203,7 @@ def search_projects(
 
 
 @router.get("/users", response_model=list[dict])
-def search_users(
+async def search_users(
     q: str = Query(..., min_length=1),
     skip: int = Query(0, ge=0),
     limit: int = Query(20, ge=1, le=100),

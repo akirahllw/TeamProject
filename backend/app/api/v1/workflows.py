@@ -54,7 +54,7 @@ class WorkflowTransitionCreate(BaseModel):
 
 
 @router.get("/", response_model=list[WorkflowResponse])
-def get_workflows(
+async def get_workflows(
     project_id: int | None = Query(None),
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=100),
@@ -73,7 +73,7 @@ def get_workflows(
 
 
 @router.get("/{workflow_id}", response_model=WorkflowResponse)
-def get_workflow(workflow_id: int, db: Session = Depends(get_db)):
+async def get_workflow(workflow_id: int, db: Session = Depends(get_db)):
     """
     Get a specific workflow by ID
     """
@@ -84,7 +84,7 @@ def get_workflow(workflow_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=WorkflowResponse, status_code=201)
-def create_workflow(workflow: WorkflowCreate, db: Session = Depends(get_db)):
+async def create_workflow(workflow: WorkflowCreate, db: Session = Depends(get_db)):
     """
     Create a new workflow
     """
@@ -107,7 +107,7 @@ def create_workflow(workflow: WorkflowCreate, db: Session = Depends(get_db)):
 
 
 @router.put("/{workflow_id}", response_model=WorkflowResponse)
-def update_workflow(
+async def update_workflow(
     workflow_id: int, workflow: WorkflowUpdate, db: Session = Depends(get_db)
 ):
     """
@@ -129,7 +129,7 @@ def update_workflow(
 
 
 @router.delete("/{workflow_id}", status_code=204)
-def delete_workflow(workflow_id: int, db: Session = Depends(get_db)):
+async def delete_workflow(workflow_id: int, db: Session = Depends(get_db)):
     """
     Delete a workflow
     """
@@ -143,7 +143,7 @@ def delete_workflow(workflow_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/{workflow_id}/statuses", response_model=list[WorkflowStatusResponse])
-def get_workflow_statuses(workflow_id: int, db: Session = Depends(get_db)):
+async def get_workflow_statuses(workflow_id: int, db: Session = Depends(get_db)):
     """
     Get all statuses in a workflow
     """
@@ -175,7 +175,7 @@ def get_workflow_statuses(workflow_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/{workflow_id}/statuses/{status_id}", status_code=201)
-def add_status_to_workflow(
+async def add_status_to_workflow(
     workflow_id: int,
     status_id: int,
     position: int | None = Query(None),
@@ -228,7 +228,7 @@ def add_status_to_workflow(
 
 
 @router.delete("/{workflow_id}/statuses/{status_id}", status_code=204)
-def remove_status_from_workflow(
+async def remove_status_from_workflow(
     workflow_id: int, status_id: int, db: Session = Depends(get_db)
 ):
     """
@@ -255,7 +255,7 @@ def remove_status_from_workflow(
 
 
 @router.post("/{workflow_id}/transitions", status_code=201)
-def create_workflow_transition(
+async def create_workflow_transition(
     workflow_id: int,
     transition: WorkflowTransitionCreate,
     db: Session = Depends(get_db),
