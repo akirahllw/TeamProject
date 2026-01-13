@@ -9,6 +9,7 @@ from app.db.base import Base  # Import Base from new location
 # This avoids circular import errors while keeping linters happy
 if TYPE_CHECKING:
     from .issue import Comment, Issue
+    from .notification import Notification
     from .project import Project, ProjectMember
 
 
@@ -46,6 +47,10 @@ class User(Base):
     )
 
     comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="author")
+
+    notifications: Mapped[list["Notification"]] = relationship(
+        "Notification", back_populates="user", cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<User(id={self.id}, username='{self.username}')>"

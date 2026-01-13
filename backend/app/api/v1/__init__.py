@@ -6,6 +6,7 @@ from . import (
     boards,
     comments,
     issues,
+    notifications,
     priorities,
     projects,
     search,
@@ -32,3 +33,4 @@ api_router.include_router(workflows.router, prefix="/workflows", tags=["workflow
 api_router.include_router(statuses.router, prefix="/statuses", tags=["statuses"])
 api_router.include_router(priorities.router, prefix="/priorities", tags=["priorities"])
 api_router.include_router(search.router, prefix="/search", tags=["search"])
+api_router.include_router(notifications.router, prefix="/notifications", tags=["notifications"])
