@@ -3,6 +3,7 @@
 
 from app.db.base import Base
 
+from .board import Board, BoardColumn, BoardType
 from .issue import Comment, Issue, IssuePriority, IssueStatus, IssueType
 from .project import Project, ProjectMember, ProjectRole
 from .sprint import Sprint, SprintStatus
@@ -29,4 +30,7 @@ __all__ = [
     "Workflow",
     "WorkflowStatus",
     "WorkflowTransition",
+    "Board",
+    "BoardColumn",
+    "BoardType",
 ]
