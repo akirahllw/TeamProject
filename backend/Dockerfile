@@ -8,7 +8,7 @@ COPY pyproject.toml .
 RUN uv pip install --system --no-cache .
 
 # Final stage
-FROM python:3.11-slim
+FROM python:3.14-slim
 
 WORKDIR /app
 
