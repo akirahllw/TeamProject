@@ -10,6 +10,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.db.base import Base, get_db
 from app.main import app
+from app.models.board import Board, BoardType
 from app.models.issue import Issue, IssuePriority, IssueStatus, IssueType
 from app.models.project import Project
 from app.models.sprint import Sprint, SprintStatus
@@ -247,6 +248,30 @@ def test_workflow(db_session):
         return workflow
 
     return _create_workflow
+
+
+@pytest.fixture(scope="function")
+def test_board(db_session):
+    """Create a test board"""
+
+    def _create_board(
+        project_id,
+        name="Test Board",
+        board_type=BoardType.KANBAN,
+        description="Test board description",
+    ):
+        board = Board(
+            name=name,
+            project_id=project_id,
+            board_type=board_type,
+            description=description,
+        )
+        db_session.add(board)
+        db_session.commit()
+        db_session.refresh(board)
+        return board
+
+    return _create_board
 
 
 @pytest.fixture(scope="function")

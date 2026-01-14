@@ -7,6 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
 if TYPE_CHECKING:
+    from .board import Board
     from .issue import Issue
     from .sprint import Sprint
     from .user import User
@@ -58,6 +59,10 @@ class Project(Base):
 
     sprints: Mapped[list["Sprint"]] = relationship(
         "Sprint", back_populates="project", cascade="all, delete-orphan"
+    )
+
+    boards: Mapped[list["Board"]] = relationship(
+        "Board", back_populates="project", cascade="all, delete-orphan"
     )
 
     def __repr__(self):
