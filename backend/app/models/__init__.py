@@ -5,6 +5,7 @@ from app.db.base import Base
 
 from .board import Board, BoardColumn, BoardType
 from .issue import Comment, Issue, IssuePriority, IssueStatus, IssueType
+from .notification import Notification, NotificationType
 from .project import Project, ProjectMember, ProjectRole
 from .sprint import Sprint, SprintStatus
 from .status import Status, StatusCategory
@@ -30,6 +31,11 @@ __all__ = [
     "Workflow",
     "WorkflowStatus",
     "WorkflowTransition",
+<<<<<<< HEAD
+=======
+    "Notification",
+    "NotificationType",
+>>>>>>> 0d1b8a3f19b6ca0b3844335a4bcd48b3ae632223
     "Board",
     "BoardColumn",
     "BoardType",

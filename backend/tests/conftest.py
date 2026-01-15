@@ -10,7 +10,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.db.base import Base, get_db
 from app.main import app
-from app.models.board import Board, BoardColumn, BoardType
+from app.models.board import Board, BoardType
 from app.models.issue import Issue, IssuePriority, IssueStatus, IssueType
 from app.models.project import Project
 from app.models.sprint import Sprint, SprintStatus

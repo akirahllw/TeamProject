@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 
 from app.db.base import Base, get_db
 from app.main import app
-from app.models.board import Board, BoardColumn, BoardType
+from app.models.board import Board, BoardType
 from app.models.issue import Issue, IssuePriority, IssueStatus, IssueType
 from app.models.project import Project
 from app.models.user import User
@@ -425,7 +425,9 @@ def test_get_board_issues_filtered_by_column():
 
     # Create a column
     column_data = {"name": "TO_DO", "position": 0}
-    column_response = client.post(f"/api/v1/boards/{board.id}/columns", json=column_data)
+    column_response = client.post(
+        f"/api/v1/boards/{board.id}/columns", json=column_data
+    )
     column_id = column_response.json()["id"]
 
     # Create issues with different statuses
@@ -513,4 +515,3 @@ def test_get_board_issues_pagination():
         assert len(data2) <= 2
     finally:
         db.close()
-
