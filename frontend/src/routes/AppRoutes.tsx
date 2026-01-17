@@ -8,6 +8,8 @@ const Welcome = React.lazy(() => import("../pages/WelcomePage/page"));
 
 const Dashboard = React.lazy(() => import("../pages/Dashboard/page"));
 
+const Projects = React.lazy(() => import("../pages/ProjectPage/ProjectsPage"));
+
 const AppRoutes = () => {
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
@@ -17,6 +19,7 @@ const AppRoutes = () => {
         <Route path="/create" element={<SignUp />} />
         <Route path="/welcome" element={<Welcome />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/projects" element={<Projects />} />
         </Routes>
     </React.Suspense>
   );
