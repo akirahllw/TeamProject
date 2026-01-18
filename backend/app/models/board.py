@@ -37,6 +37,13 @@ class Board(Base):
 
     project: Mapped["Project"] = relationship("Project", back_populates="boards")
     columns: Mapped[list["BoardColumn"]] = relationship(
+<<<<<<< HEAD
+        "BoardColumn", back_populates="board", cascade="all, delete-orphan", order_by="BoardColumn.position"
+    )
+
+    def __repr__(self):
+        return f"<Board(id={self.id}, name='{self.name}', board_type='{self.board_type}')>"
+=======
         "BoardColumn",
         back_populates="board",
         cascade="all, delete-orphan",
@@ -47,6 +54,7 @@ class Board(Base):
         return (
             f"<Board(id={self.id}, name='{self.name}', board_type='{self.board_type}')>"
         )
+>>>>>>> 0d1b8a3f19b6ca0b3844335a4bcd48b3ae632223
 
 
 class BoardColumn(Base):
@@ -69,3 +77,7 @@ class BoardColumn(Base):
 
     def __repr__(self):
         return f"<BoardColumn(id={self.id}, name='{self.name}', board_id={self.board_id}, position={self.position})>"
+<<<<<<< HEAD
+
+=======
+>>>>>>> 0d1b8a3f19b6ca0b3844335a4bcd48b3ae632223

@@ -31,8 +31,11 @@ __all__ = [
     "Workflow",
     "WorkflowStatus",
     "WorkflowTransition",
+<<<<<<< HEAD
+=======
     "Notification",
     "NotificationType",
+>>>>>>> 0d1b8a3f19b6ca0b3844335a4bcd48b3ae632223
     "Board",
     "BoardColumn",
     "BoardType",
