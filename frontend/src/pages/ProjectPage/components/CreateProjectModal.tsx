@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { X } from 'lucide-react';
 import { Button } from '../../../components/Button';
-import { createProjectSchema, CreateProjectFormData } from '../schemas/project';
+import { createProjectSchema, CreateProjectFormData } from "../../Dashboard/schemas/project.ts";
 
 interface CreateProjectModalProps {
   isOpen: boolean;
