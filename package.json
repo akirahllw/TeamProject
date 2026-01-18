@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
+    "app": "^0.1.0",
+    "axios": "^1.13.2",
+    "clsx": "^2.1.1",
+    "fastapi": "^0.0.8",
+    "lucide-react": "^0.562.0",
+    "react-hook-form": "^7.71.1",
+    "react-router-dom": "^7.12.0",
+    "tailwind-merge": "^3.4.0",
+    "unicorn": "^0.0.1",
+    "zod": "^4.3.5"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.8",
+    "@types/react-dom": "^19.2.3"
+  }
+}
