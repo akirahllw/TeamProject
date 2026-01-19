@@ -10,10 +10,18 @@ interface SidebarProps {
 }
 
 const NavItem = ({ icon: Icon, label, active, hasSubmenu, onClick }: any) => (
-  <div onClick={onClick} className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors group ${active ? 'bg-blue-100 text-blue-700' : 'text-slate-700 hover:bg-slate-100'}`}>
+  <div 
+    onClick={onClick} 
+    className={`
+      flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors group 
+      ${active ? 'bg-blue-100 text-blue-700' : 'text-slate-700 hover:bg-slate-100'}
+    `}
+  >
     <div className="flex items-center gap-3">
       <Icon size={20} className={active ? 'text-blue-700' : 'text-slate-600'} />
-      <span className={`text-sm font-medium ${active ? 'text-blue-900' : 'text-slate-700'}`}>{label}</span>
+      <span className={`text-sm font-medium ${active ? 'text-blue-900' : 'text-slate-700'}`}>
+        {label}
+      </span>
     </div>
     {hasSubmenu && <ChevronRight size={16} className="text-slate-400 group-hover:text-slate-600" />}
   </div>
@@ -21,7 +29,8 @@ const NavItem = ({ icon: Icon, label, active, hasSubmenu, onClick }: any) => (
 
 export const Sidebar: React.FC<SidebarProps> = ({ onCreateProject }) => {
   const location = useLocation();
-  const isActive = (path: string) => location.pathname === path;
+
+  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 
   return (
     <aside className="w-64 bg-white border-r border-slate-200 h-screen fixed left-0 top-0 flex flex-col z-20 overflow-y-auto pb-4">
@@ -32,6 +41,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCreateProject }) => {
       </div>
 
       <div className="px-3 space-y-6">
+        {/* Main Navigation */}
         <div className="space-y-1">
           <Link to="/dashboard">
              <NavItem icon={User} label="For you" active={isActive('/dashboard')} hasSubmenu />
@@ -44,6 +54,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCreateProject }) => {
           <NavItem icon={Grid} label="Apps" />
         </div>
 
+        {/* SECTIONS AREA */}
         <div className="space-y-1">
           <div className="flex items-center justify-between px-3 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider group cursor-pointer hover:bg-slate-50 rounded">
             <span>Sections</span>
@@ -58,8 +69,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCreateProject }) => {
                <Plus size={16} />
             </div>
           </div>
-          <NavItem icon={Layout} label="PROJECT" />
-          <NavItem icon={BookOpen} label="Learn" />
+
+          <Link to="/project/PROJECT">
+            <NavItem 
+              icon={Layout} 
+              label="PROJECT" 
+              active={isActive('/project/PROJECT')} 
+            />
+          </Link>
+
+          <Link to="/project/Learn">
+            <NavItem 
+              icon={BookOpen} 
+              label="Learn" 
+              active={isActive('/project/Learn')} 
+            />
+          </Link>
         </div>
 
         <div className="space-y-1">

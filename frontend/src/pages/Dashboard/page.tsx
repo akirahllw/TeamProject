@@ -17,18 +17,22 @@ export default function DashboardPage() {
             </div>
 
             <div className="flex gap-6 overflow-x-auto pb-2">
+              <Link to="/project/AYIST_ERP/">
               <ProjectCard
                 title="AYIST_ERP"
                 subtitle="Software, ..."
                 myTasks={0}
                 iconColor="bg-blue-500"
               />
+              </Link>
+              <Link to="/project/Jira Premium be/">
               <ProjectCard
                 title="(Learn) Jira Premium be..."
                 subtitle="Software, ..."
                 myTasks={0}
                 iconColor="bg-indigo-600"
               />
+              </Link>
             </div>
           </div>
 
