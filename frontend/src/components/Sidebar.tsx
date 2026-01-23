@@ -5,6 +5,9 @@ import {
   LayoutDashboard, Users, Settings, Flag, Plus, ChevronRight 
 } from 'lucide-react';
 
+// IMPORT YOUR NEW HOOK HERE
+import { useProjectsList } from '../hooks/useProjectList'; 
+
 interface SidebarProps {
   onCreateProject?: () => void;
 }
@@ -30,10 +33,15 @@ const NavItem = ({ icon: Icon, label, active, hasSubmenu, onClick }: any) => (
 export const Sidebar: React.FC<SidebarProps> = ({ onCreateProject }) => {
   const location = useLocation();
 
+  // 1. Fetch the real projects from the database
+  const { projects, loading } = useProjectsList();
+
+  // Helper to check if a route is active
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
 
   return (
     <aside className="w-64 bg-white border-r border-slate-200 h-screen fixed left-0 top-0 flex flex-col z-20 overflow-y-auto pb-4">
+      {/* Sidebar Header / Logo Area */}
       <div className="h-16 flex items-center px-5 mb-2">
          <div className="p-2 -ml-2 hover:bg-slate-100 rounded-md cursor-pointer transition-colors">
             <Menu className="text-slate-600" size={24} />
@@ -41,6 +49,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCreateProject }) => {
       </div>
 
       <div className="px-3 space-y-6">
+        
         {/* Main Navigation */}
         <div className="space-y-1">
           <Link to="/dashboard">
@@ -54,7 +63,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCreateProject }) => {
           <NavItem icon={Grid} label="Apps" />
         </div>
 
-        {/* SECTIONS AREA */}
+        {/* --- DYNAMIC PROJECTS SECTION --- */}
         <div className="space-y-1">
           <div className="flex items-center justify-between px-3 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider group cursor-pointer hover:bg-slate-50 rounded">
             <span>Sections</span>
@@ -69,24 +78,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ onCreateProject }) => {
                <Plus size={16} />
             </div>
           </div>
+          
+          {/* 2. Render List or Loading State */}
+          {loading ? (
+             <div className="px-3 py-2 text-xs text-slate-400 animate-pulse">Loading projects...</div>
+          ) : (
+             projects.map((project) => (
+               <Link key={project.id} to={`/project/${project.key}`}>
+                 <NavItem 
+                   icon={Layout} 
+                   label={project.name} 
+                   active={isActive(`/project/${project.key}`)} 
+                 />
+               </Link>
+             ))
+          )}
 
-          <Link to="/project/PROJECT">
-            <NavItem 
-              icon={Layout} 
-              label="PROJECT" 
-              active={isActive('/project/PROJECT')} 
-            />
-          </Link>
-
+          {/* Static "Learn" Section */}
           <Link to="/project/Learn">
-            <NavItem 
-              icon={BookOpen} 
-              label="Learn" 
-              active={isActive('/project/Learn')} 
-            />
+             <NavItem icon={BookOpen} label="Learn" active={isActive('/project/Learn')} />
           </Link>
         </div>
 
+        {/* Footer Navigation */}
         <div className="space-y-1">
            <NavItem icon={Menu} label="Other sections" hasSubmenu />
         </div>

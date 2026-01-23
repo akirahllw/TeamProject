@@ -1,90 +1,96 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
+import { api } from '../../../api/api';
 
 export type TaskStatus = 'TO DO' | 'IN PROGRESS' | 'IN REVIEW' | 'DONE';
-export type TaskType = 'Task' | 'Bug' | 'Story' | 'Epic'; 
 
 export interface Task {
-  id: string;
+  id: string; // Python might return int, but string is safer for frontend keys
   key: string;
   title: string;
-  type: TaskType; 
+  type: 'Task' | 'Bug' | 'Story';
   status: TaskStatus;
   assignee: string;
-  reporter: string;
-  dueDate?: string;
-  priority: 'High' | 'Medium' | 'Low' | 'None';
+  priority: string;
   created: string;
 }
 
-const INITIAL_TASKS: Task[] = [
-  {
-    id: '1',
-    key: 'KAN-1',
-    title: 'Research Competitors',
-    type: 'Story', 
-    status: 'TO DO',
-    assignee: 'Unassigned',
-    reporter: 'Artem Ratushnyi',
-    priority: 'High',
-    created: 'Jan 04, 2026'
-  },
-  {
-    id: '2',
-    key: 'KAN-2',
-    title: 'Fix Login Crash',
-    type: 'Bug', 
-    status: 'IN PROGRESS',
-    assignee: 'Artem Ratushnyi',
-    reporter: 'Artem Ratushnyi',
-    priority: 'High',
-    created: 'Jan 05, 2026'
-  }
-];
-
 export const useProjectData = () => {
-  const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
-  const [columns, setColumns] = useState<TaskStatus[]>(['TO DO', 'IN PROGRESS', 'IN REVIEW', 'DONE']);
+  const { projectId } = useParams(); // This will be the Project KEY (e.g., "AYIST")
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [columns] = useState<TaskStatus[]>(['TO DO', 'IN PROGRESS', 'IN REVIEW', 'DONE']);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // 1. FETCH TASKS FROM API
+  useEffect(() => {
+    if (!projectId) return;
 
-const createTask = (
-  title: string, 
-  status: TaskStatus, 
-  assignee: string, 
-  type: TaskType = 'Task',
-  priority: 'High' | 'Medium' | 'Low' | 'None' = 'None'
-) => {
-  const newTask: Task = {
-    id: Date.now().toString(),
-    key: `KAN-${tasks.length + 1}`,
-    title,
-    type,
-    status,
-    assignee: assignee || 'Unassigned',
-    reporter: 'You',
-    priority: priority, 
-    created: new Date().toLocaleDateString()
+    const fetchTasks = async () => {
+      setIsLoading(true);
+      try {
+        // Backend should define: GET /api/projects/{key}/issues
+        const response = await api.get<Task[]>(`/projects/${projectId}/issues`);
+        setTasks(response.data);
+      } catch (err) {
+        console.error("Failed to load tasks", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTasks();
+  }, [projectId]);
+
+  // 2. CREATE TASK
+  const createTask = async (title: string, status: TaskStatus, assignee: string, type: any, priority: any) => {
+    // Optimistic Update (Show it immediately)
+    const tempId = Date.now().toString();
+    const newTask: Task = {
+      id: tempId,
+      key: `${projectId}-...`, 
+      title,
+      status,
+      assignee: assignee || 'Unassigned',
+      type,
+      priority,
+      created: new Date().toLocaleDateString()
+    };
+    
+    setTasks(prev => [...prev, newTask]);
+
+    try {
+      // Send to Backend
+      const response = await api.post(`/projects/${projectId}/issues`, {
+        title, status, assignee, type, priority
+      });
+      
+      // Replace temp task with real data from server
+      setTasks(prev => prev.map(t => t.id === tempId ? response.data : t));
+    } catch (error) {
+      console.error("Failed to create task", error);
+      // Rollback on error
+      setTasks(prev => prev.filter(t => t.id !== tempId));
+    }
   };
-  setTasks([...tasks, newTask]);
-};
 
-  const updateStatus = (taskId: string, newStatus: TaskStatus) => {
+  // 3. UPDATE STATUS (Drag and Drop / Dropdown)
+  const updateStatus = async (taskId: string, newStatus: TaskStatus) => {
+    // Optimistic Update
     setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
-  };
 
-  const deleteTask = (taskId: string) => {
-    setTasks(prev => prev.filter(t => t.id !== taskId));
-  };
-
-  const addColumn = (name: string) => {
-    setColumns([...columns, name as TaskStatus]);
+    try {
+      await api.patch(`/issues/${taskId}`, { status: newStatus });
+    } catch (error) {
+      console.error("Failed to update status", error);
+    }
   };
 
   return { 
     tasks, 
     columns, 
+    isLoading,
     createTask, 
     updateStatus, 
-    deleteTask, 
-    addColumn 
+    // ... export other functions
   };
 };

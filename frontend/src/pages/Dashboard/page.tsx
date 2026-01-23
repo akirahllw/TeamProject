@@ -1,9 +1,22 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 import { DashboardLayout } from '../../layout/DashboardLayout';
 import { ProjectCard } from './components/ProjectCard';
 import { TaskRow } from './components/TaskRow';
-import { Link } from "react-router-dom";
+
+// 1. Import your data hook
+import { useProjectsList } from '../../hooks/useProjectList';
+
 export default function DashboardPage() {
+  // 2. Fetch real projects
+  const { projects, loading } = useProjectsList();
+
+  // Helper to assign random colors to projects (visual flair)
+  const getIconColor = (index: number) => {
+    const colors = ['bg-blue-500', 'bg-indigo-600', 'bg-purple-600', 'bg-emerald-500', 'bg-orange-500'];
+    return colors[index % colors.length];
+  };
+
   return (
     <DashboardLayout>
       <div className="flex min-h-[calc(100vh-64px)]">
@@ -12,27 +25,30 @@ export default function DashboardPage() {
 
           <div className="mb-8">
             <div className="flex justify-between items-end mb-4">
-              <h2 className="text-base font-bold text-slate-800">Recent sections</h2>
+              <h2 className="text-base font-bold text-slate-800">Recent projects</h2>
               <Link to="/projects" className="text-sm text-blue-600 font-medium hover:underline">See all</Link>
             </div>
 
-            <div className="flex gap-6 overflow-x-auto pb-2">
-              <Link to="/project/AYIST_ERP/">
-              <ProjectCard
-                title="AYIST_ERP"
-                subtitle="Software, ..."
-                myTasks={0}
-                iconColor="bg-blue-500"
-              />
-              </Link>
-              <Link to="/project/Jira Premium be/">
-              <ProjectCard
-                title="(Learn) Jira Premium be..."
-                subtitle="Software, ..."
-                myTasks={0}
-                iconColor="bg-indigo-600"
-              />
-              </Link>
+            <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
+              {/* 3. Render Loading State or Real Data */}
+              {loading ? (
+                <div className="text-sm text-slate-400 p-4">Loading projects...</div>
+              ) : projects.length > 0 ? (
+                projects.map((project, index) => (
+                  <Link key={project.id} to={`/project/${project.key}`}>
+                    <ProjectCard
+                      title={project.name}
+                      subtitle={`${project.key} software project`}
+                      myTasks={0} // You can connect this to real task counts later
+                      iconColor={getIconColor(index)}
+                    />
+                  </Link>
+                ))
+              ) : (
+                <div className="text-sm text-slate-500 bg-white p-4 rounded-lg border border-slate-200">
+                  No projects yet. Create one!
+                </div>
+              )}
             </div>
           </div>
 
@@ -58,29 +74,24 @@ export default function DashboardPage() {
                 ),
               )}
             </div>
+            
             <div className="mb-3">
               <h3 className="text-xs font-bold text-slate-400 uppercase mb-2">
                 Last Month
               </h3>
               <div className="space-y-1">
+                 {/* Optional: If you want these tasks to be dynamic too, 
+                     you'll need a similar 'useRecentTasks' hook. 
+                     For now, they are static placeholders.
+                 */}
                 <TaskRow
                   title="Build Vendor Creation/Edit Form"
                   id="ECS-19"
                   project="AYIST_ERP"
                 />
                 <TaskRow
-                  title="Discovery - Vendors Module Flow and Architecture Planning_FE"
+                  title="Discovery - Vendors Module Flow"
                   id="ECS-18"
-                  project="AYIST_ERP"
-                />
-                <TaskRow
-                  title="CRM Customer Profile Page (Overview and Contacts)"
-                  id="ECS-17"
-                  project="AYIST_ERP"
-                />
-                <TaskRow
-                  title="Build CRM Creation Form"
-                  id="ECS-15"
                   project="AYIST_ERP"
                 />
               </div>

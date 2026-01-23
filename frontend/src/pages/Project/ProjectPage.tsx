@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { DashboardLayout } from '../../layout/DashboardLayout'; 
+import { DashboardLayout } from '../../layout/DashboardLayout';
 import { ProjectHeader } from './components/ProjectHeader';
 import { BoardView } from './components/BoardView';
 import { ListView } from './components/ListView';
